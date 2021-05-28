@@ -145,13 +145,14 @@ module.exports = (app, { getRouter }) => {
     // GitHub Actions merge payloads slightly differ, in that their ref points
     // to the PR branch instead of refs/heads/master
     const ref = process.env['GITHUB_REF'] || context.payload.ref
+    const commitish = config['commitish'] || ''
 
     if (!isTriggerableReference({ ref, context, config })) {
       return
     }
 
     const { draftRelease, lastRelease } = await findReleases({
-      ref,
+      commitish,
       context,
       config,
     })
@@ -160,7 +161,7 @@ module.exports = (app, { getRouter }) => {
       pullRequests: mergedPullRequests,
     } = await findCommitsWithAssociatedPullRequests({
       context,
-      ref,
+      commitish,
       lastRelease,
       config,
     })
